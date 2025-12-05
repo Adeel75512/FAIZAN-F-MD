@@ -1,16 +1,44 @@
-FROM node:lts-buster
+# -------------------------------------
+# 1. Base Image (Alpine is smallest)
+# -------------------------------------
+FROM node:18-alpine
 
-# Clone bot from GitHub
-RUN git clone https://github.com/hissari-786/Muzammil-MD.git /root/muzammil-bot
+# -------------------------------------
+# 2. Install required dependencies
+# -------------------------------------
+RUN apk update && apk add --no-cache \
+    ffmpeg \
+    imagemagick \
+    git \
+    bash
 
-# Set working directory
-WORKDIR /root/arslan-bot
+# -------------------------------------
+# 3. App working directory
+# -------------------------------------
+WORKDIR /app
 
-# Install dependencies
-RUN npm install && npm install -g pm2 || yarn install --network-concurrency 1
+# -------------------------------------
+# 4. Copy package files first
+# -------------------------------------
+COPY package.json .
+COPY package-lock.json .
 
-# Expose port
-EXPOSE 9090
+# -------------------------------------
+# 5. Install Node dependencies
+# -------------------------------------
+RUN npm install --production
 
-# Start the bot
-CMD ["npm", "start"]
+# -------------------------------------
+# 6. Copy all bot files
+# -------------------------------------
+COPY . .
+
+# -------------------------------------
+# 7. Expose port (if your bot uses express)
+# -------------------------------------
+EXPOSE 3000
+
+# -------------------------------------
+# 8. Start the bot
+# -------------------------------------
+CMD ["node", "index.js"]
