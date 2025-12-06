@@ -1,4 +1,3 @@
-
 // Repaired full index.js (with crypto fix) (Baileys MD Compatible)
 // -------------------------------------------------------
 
@@ -91,5 +90,19 @@ async function connectToWA() {
     }
 }
 
+// SESSION ID LOGIN SUPPORT
+// If SESSION_ID exists in environment, load it
+if (process.env.SESSION_ID) {
+    try {
+        const decoded = Buffer.from(process.env.SESSION_ID, 'base64').toString();
+        if (!fs.existsSync('./session')) fs.mkdirSync('./session');
+        fs.writeFileSync('./session/creds.json', decoded);
+        console.log('SESSION_ID loaded successfully ✔️');
+    } catch (e) {
+        console.log('Invalid SESSION_ID ❌');
+    }
+}
+
 // START BOT --------------------------------------------------------------
 connectToWA();
+
